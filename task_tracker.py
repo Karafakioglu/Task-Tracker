@@ -66,6 +66,10 @@ elif COMMAND == "update":
         print(f"updated {REST}")
 
 elif COMMAND == "delete":
+    temp_list = []
+    for task in tasks:
+        temp_list.append(task["id"])
+
     if len(REST) != 1:
         sys.exit("Enter task values")
     else:
@@ -74,6 +78,15 @@ elif COMMAND == "delete":
         except ValueError:
             sys.exit("Task ID must be a number")
         print(f"placeholder: {REST}")
+
+    if task_id not in temp_list:
+        print(f"No task with {task_id} found.")
+    else:
+        for task in tasks:
+            if task["id"] == task_id:
+                tasks.remove(task)
+                save_tasks(tasks)
+                print(f"Task {task_id} has been deleted")
 
 elif COMMAND == "mark-in-progress":
     if len(REST) != 1:
