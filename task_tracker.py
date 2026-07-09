@@ -56,6 +56,10 @@ if COMMAND == "add":
 
 
 elif COMMAND == "update":
+    current_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    temp_list = []
+    for task in tasks:
+        temp_list.append(task["id"])
     if len(REST) != 2:
         sys.exit("Enter task values")
     else:
@@ -63,7 +67,16 @@ elif COMMAND == "update":
             task_id = int(REST[0])
         except ValueError:
             sys.exit("Task ID must be a number")
-        print(f"updated {REST}")
+        
+        if task_id not in temp_list:
+            print(f"No task with {task_id} found.")
+        else:
+            for task in tasks:
+                if task["id"] == task_id:
+                    task["UpdatedAt"] = current_time
+                    task["description"] = REST[1]
+                    save_tasks(tasks)
+                    print(f"Task {task_id} has been updated with {REST[1]}")
 
 elif COMMAND == "delete":
     temp_list = []
@@ -77,7 +90,6 @@ elif COMMAND == "delete":
             task_id = int(REST[0])
         except ValueError:
             sys.exit("Task ID must be a number")
-        print(f"placeholder: {REST}")
 
     if task_id not in temp_list:
         print(f"No task with {task_id} found.")
@@ -97,6 +109,27 @@ elif COMMAND == "mark-in-progress":
         except ValueError:
             sys.exit("Task ID must be a number")
         print(f"The following are the tasks: {REST}")
+    # current_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    # temp_list = []
+    # for task in tasks:
+    #     temp_list.append(task["id"])
+    # if len(REST) != 1:
+    #     sys.exit("Enter task values")
+    # else:
+    #     try:
+    #         task_id = int(REST[0])
+    #     except ValueError:
+    #         sys.exit("Task ID must be a number")
+        
+    #     if task_id not in temp_list:
+    #         print(f"No task with {task_id} found.")
+    #     else:
+    #         for task in tasks:
+    #             if task["id"] == task_id:
+    #                 task["UpdatedAt"] = current_time
+    #                 task["status"] = REST[1]
+    #                 save_tasks(tasks)
+    #                 print(f"Task {task_id} has been updated with {REST[1]}")
 
 elif COMMAND == "mark-done":
     if len(REST) != 1:
