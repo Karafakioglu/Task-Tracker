@@ -96,10 +96,25 @@ elif COMMAND == "mark-done":
         print(f"The following are the tasks: {REST}")
 
 elif COMMAND == "list":
+    valid_statuses = ["todo", "in-progress", "done"]
+    temp_matching_tasks = []
     if len(REST) > 1:
         sys.exit("Enter task values")
     else:
-        print(f"The following are the tasks: {REST}")
+        if REST:
+            if REST[0] not in valid_statuses:
+                print("Please enter either todo, done, or in-progress after list")
+            else:
+                for task in tasks:
+                    if task["status"] == REST[0]:
+                        temp_matching_tasks.append(task)
+                if temp_matching_tasks:
+                    print(temp_matching_tasks)
+                else:
+                    print("No task found")
+        else:
+            for task in tasks:
+                print(task)
 
 else:
     sys.exit(f"Unkown COMMAND: {COMMAND}")
