@@ -29,6 +29,11 @@ def save_tasks(tasks):
 tasks = load_tasks()
 
 def get_next_id(tasks):
+    for task in tasks:
+        if task["id"] == task_id:
+            return task_id + 1
+    return None
+
     temp_list = []
     for task in tasks:
         temp_list.append(task["id"])
@@ -38,9 +43,11 @@ def get_next_id(tasks):
     except ValueError:
         return 1
 
-    
-
-
+def find_task(tasks, task_id):
+    for task in tasks:
+        if task["id"] == task_id:
+            return task
+    return None
 
 if COMMAND == "add":
     current_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -51,15 +58,10 @@ if COMMAND == "add":
         tasks.append(new_dict)
         save_tasks(tasks)
 
-
         print(f"{REST} is added")
-
 
 elif COMMAND == "update":
     current_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    temp_list = []
-    for task in tasks:
-        temp_list.append(task["id"])
     if len(REST) != 2:
         sys.exit("Enter task values")
     else:
@@ -67,44 +69,38 @@ elif COMMAND == "update":
             task_id = int(REST[0])
         except ValueError:
             sys.exit("Task ID must be a number")
-        
-        if task_id not in temp_list:
-            print(f"No task with {task_id} found.")
-        else:
-            for task in tasks:
-                if task["id"] == task_id:
-                    task["UpdatedAt"] = current_time
-                    task["description"] = REST[1]
-                    save_tasks(tasks)
-                    print(f"Task {task_id} has been updated with {REST[1]}")
+    
+    task = find_task(tasks, task_id)
+
+    if not task:
+        print(f"No task with {task_id} found.")
+    else:
+        task["UpdatedAt"] = current_time
+        task["description"] = REST[1]
+        save_tasks(tasks)
+        print(f"Task {task_id} has been updated with {REST[1]}")
 
 elif COMMAND == "delete":
-    temp_list = []
-    for task in tasks:
-        temp_list.append(task["id"])
-
     if len(REST) != 1:
         sys.exit("Enter task values")
     else:
         try:
             task_id = int(REST[0])
         except ValueError:
-            sys.exit("Task ID must be a number")
+            sys.exit("Task ID mist be a number")
+    
+    task = find_task(tasks, task_id)
 
-    if task_id not in temp_list:
+    if not task:
         print(f"No task with {task_id} found.")
     else:
-        for task in tasks:
-            if task["id"] == task_id:
-                tasks.remove(task)
-                save_tasks(tasks)
-                print(f"Task {task_id} has been deleted")
+        tasks.remove(task)
+        save_tasks(tasks)
+        print(f"Task {task_id} has been deleted")
+
 
 elif COMMAND == "mark-in-progress":
     current_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    temp_list = []
-    for task in tasks:
-        temp_list.append(task["id"])
     if len(REST) != 1:
         sys.exit("Enter task values")
     else:
@@ -112,22 +108,19 @@ elif COMMAND == "mark-in-progress":
             task_id = int(REST[0])
         except ValueError:
             sys.exit("Task ID must be a number")
-        
-        if task_id not in temp_list:
-            print(f"No task with {task_id} found.")
-        else:
-            for task in tasks:
-                if task["id"] == task_id:
-                    task["UpdatedAt"] = current_time
-                    task["status"] = "in-progress"
-                    save_tasks(tasks)
-                    print(f"Task {task_id} has been updated")
+    
+    task = find_task(tasks, task_id)
+
+    if not task:
+        print(f"No task with {task_id} found.")
+    else:
+        task["UpdatedAt"] = current_time
+        task["status"] = "in-progress"
+        save_tasks(tasks)
+        print(f"Task {task_id} has been updated")
 
 elif COMMAND == "mark-done":
     current_time = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    temp_list = []
-    for task in tasks:
-        temp_list.append(task["id"])
     if len(REST) != 1:
         sys.exit("Enter task values")
     else:
@@ -135,16 +128,15 @@ elif COMMAND == "mark-done":
             task_id = int(REST[0])
         except ValueError:
             sys.exit("Task ID must be a number")
-        
-        if task_id not in temp_list:
-            print(f"No task with {task_id} found.")
-        else:
-            for task in tasks:
-                if task["id"] == task_id:
-                    task["UpdatedAt"] = current_time
-                    task["status"] = "done"
-                    save_tasks(tasks)
-                    print(f"Task {task_id} has been updated")
+    task = find_task(tasks, task_id)
+
+    if not task:
+        print(f"No task with {task_id} found.")
+    else:
+        task["UpdatedAt"] = current_time
+        task["status"] = "done"
+        save_tasks(tasks)
+        print(f"Task {task_id} has been updated")
 
 elif COMMAND == "list":
     valid_statuses = ["todo", "in-progress", "done"]
